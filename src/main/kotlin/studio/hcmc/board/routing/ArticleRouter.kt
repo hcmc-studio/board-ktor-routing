@@ -12,6 +12,7 @@ import studio.hcmc.board.dto.ErrorDTO
 import studio.hcmc.board.service.ArticleService
 import studio.hcmc.kotlin.protocol.toValueObjects
 import studio.hcmc.ktor.routing.respondArray
+import studio.hcmc.ktor.routing.respondEmpty
 import studio.hcmc.ktor.routing.respondObject
 
 fun Routing.articleRouter() {
@@ -20,6 +21,9 @@ fun Routing.articleRouter() {
 
     @Resource("/boards/articles/{id}")
     data class Put(val id: Long)
+
+    @Resource("/boards/articles/{id}")
+    data class Delete(val id: Long)
 
     @Resource("/boards/articles/{id}")
     data class Get(val id: Long)
@@ -43,6 +47,11 @@ fun Routing.articleRouter() {
         val entity = ArticleService.set(id, dto) ?: throw ErrorDTO.ArticleNotFound
         val vo = entity.toValueObject()
         call.respondObject(HttpStatusCode.OK, vo)
+    }
+
+    delete<Delete> { (id) ->
+        ArticleService.remove(id)
+        call.respondEmpty(HttpStatusCode.OK)
     }
 
     get<Get> { (id) ->
